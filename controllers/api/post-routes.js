@@ -71,7 +71,65 @@ router.get('/:id', (req, res) => {
     Expects 
     {
         title: 'Example Title', 
-        post_url: 'TextHere', 
+        post_content: 'TextHere', 
         user_id: 1
     }
 */
+router.post('/', (req, res) => {
+    Post.create ({
+        title: req.body.title,
+        post_content: req.body.post_content,
+        user_id: req.session.user_id
+    })
+    .then(dbPostData => res.json(dbPostData))
+    .catch(err => {
+        console.log(err);
+        res.status(500).json(err);
+    });
+});
+
+router.put('/:id', (req, res) => {    
+    Post.update (
+        {
+            title: req.body.title,
+            post_content: req.body.post_content
+        },
+        {
+            where: {
+                id: req.params.id
+            }
+        }
+    )
+    .then(dbPostData => {
+        if (!dbPostData) {
+            res.status(404).json({ message: 'No post found with this id' });
+            return;
+        }
+        res.json(dbPostData);
+    })
+    .catch(err => {
+        console.log(err);
+        res.status(500).json(err);
+    });
+});
+
+router.delete('/:id', (req, res) => {
+    Post.destroy ({
+        where: {
+            id: req.params.id
+        }
+    })
+    .then(dbPostData => {
+        if (!dbPostData) {
+          res.status(404).json({ message: 'No post found with this id' });
+          return;
+        }
+        res.json(dbPostData);
+    })
+    .catch(err => {
+        console.log(err);
+        res.status(500).json(err);
+    });
+});
+
+module.exports = router;
