@@ -125,3 +125,53 @@ router.post('/logout', (req, res) => {
 
 //***LOGIN AND LOGOUT END***//
 
+router.put('/:id', (req, res) => {
+    /* 
+    Expects something like
+        {
+        username: 'ExampleName', 
+        email: 'example@gmail.com', 
+        password: 'password1234'
+        }
+    */
+
+    // Pass in req.body to only update what's passed through
+    User.update(req.body, {
+        individualHooks: true,
+        where: {
+            id: req.params.id
+        }
+    })
+    .then(dbUserData => {
+        if (!dbUserData) {
+            res.status(404).json({ message: 'No user found with this id' });
+            return;
+        }
+        res.json(dbUserData);
+    })
+    .catch(err => {
+        console.log(err);
+        res.status(500).json(err);
+    });
+});
+
+router.delete('/:id', (req, res) => {
+    User.destroy ({
+        where: {
+            id: req.params.id
+        }
+    })
+    .then(dbUserData => {
+        if (!dbUserData) {
+            res.status(404).json({ message: 'No user found with this id' });
+            return;
+        }
+        res.json(dbUserData);
+    })
+    .catch(err => {
+        console.log(err);
+        res.status(500).json(err);
+    });
+});
+
+module.exports = router;
